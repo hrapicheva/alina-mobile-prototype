@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Прототип — Приёмка товара по штрихкоду</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--text:#17212b;--muted:#667085;--line:#e5e7eb;--accent:#0f6fff;--ok:#0a8f5a;--warn:#c2410c}
+  *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#eef3f8,#f8fafc);font-family:Inter,Arial,sans-serif;color:var(--text)}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .stage{width:min(1100px,100%);display:grid;grid-template-columns:380px 1fr;gap:34px;align-items:start}
+  .phone{width:100%;max-width:380px;min-height:760px;border:10px solid #111827;border-radius:36px;background:#f9fafb;box-shadow:0 24px 70px rgba(15,23,42,.16);overflow:hidden;position:relative}
+  .status{height:34px;padding:10px 18px 0;font-size:11px;color:#475467;display:flex;justify-content:space-between}
+  .screen{padding:18px 20px 24px}.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.title{font-weight:800;font-size:20px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 20px rgba(16,24,40,.05);margin-bottom:14px}
+  .label{font-size:12px;color:var(--muted);margin-bottom:7px}.big{font-size:21px;font-weight:800}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.kpi{font-size:13px;color:var(--muted)}.kpi b{color:var(--text);font-size:15px}
+  .scanbox{height:185px;background:#111827;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:12px 0}.scanbox:before{content:"";width:210px;height:110px;border:2px solid #98a2b3;border-radius:8px}.scanline{position:absolute;height:2px;width:180px;background:#fb7185;box-shadow:0 0 12px #fb7185;animation:scan 2s linear infinite}@keyframes scan{0%{transform:translateY(-45px)}50%{transform:translateY(45px)}100%{transform:translateY(-45px)}}
+  .btn{width:100%;border:0;border-radius:12px;padding:14px 16px;background:var(--accent);color:white;font-weight:800;font-size:15px;cursor:pointer;transition:.2s}.btn:hover{filter:brightness(.96);transform:translateY(-1px)}.btn.secondary{background:#eef4ff;color:#175cd3}.btn.ghost{background:white;color:#344054;border:1px solid var(--line)}.btn.danger{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+  .input{width:100%;border:1px solid #d0d5dd;border-radius:11px;padding:13px 14px;font-size:15px;outline:none;background:white}.input:focus{border-color:#84adff;box-shadow:0 0 0 3px #dbe8ff}
+  .qty{display:grid;grid-template-columns:46px 1fr 46px;gap:8px;align-items:center;margin-top:12px}.qbtn{height:44px;border:1px solid var(--line);background:white;border-radius:11px;font-size:20px;cursor:pointer}.qval{text-align:center;font-weight:800;font-size:20px}
+  .success{width:76px;height:76px;border-radius:50%;background:#d1fadf;color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:38px;margin:34px auto 18px}.error{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:13px 14px;font-size:13px;margin:12px 0}
+  .hidden{display:none!important}
+  .side{padding-top:10px}.side h1{font-size:34px;line-height:1.1;margin:0 0 12px}.side p{color:#475467;line-height:1.65;margin:0 0 18px}.steps{display:grid;gap:10px}.step{background:white;border:1px solid var(--line);padding:14px 16px;border-radius:14px;display:flex;gap:12px;align-items:flex-start}.n{width:28px;height:28px;border-radius:50%;background:#eef4ff;color:#175cd3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none}.step b{display:block;font-size:14px;margin-bottom:3px}.step span{font-size:13px;color:#667085}.hint{margin-top:18px;font-size:12px!important;color:#98a2b3!important}.pill{display:inline-block;background:#ecfdf3;color:#027a48;border:1px solid #abefc6;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:14px}
+  @media(max-width:850px){.stage{grid-template-columns:1fr}.phone{margin:auto}.side{order:-1;text-align:center}.steps{text-align:left}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+    <div class="phone">
+      <div class="status"><span>09:41</span><span>▰ ▰ ◉</span></div>
+      <div class="screen">
+        <section id="s1">
+          <div class="header"><div><div class="title">Приёмка товара</div><div class="sub">Документ ПР-10482</div></div><span>⋯</span></div>
+          <div class="card"><div class="label">Шаг 1</div><div class="big">Отсканируйте штрихкод</div><div class="sub">или введите его вручную</div><div class="scanbox"><div class="scanline"></div></div><button class="btn" onclick="go(2)">Сканировать</button></div>
+          <button class="btn ghost" onclick="go(2)">Ввести вручную</button>
+        </section>
+
+        <section id="s2" class="hidden">
+          <div class="header"><div><div class="title">Штрихкод</div><div class="sub">Проверка кода в документе</div></div><button class="qbtn" onclick="go(1)">‹</button></div>
+          <div class="card"><div class="label">Штрихкод</div><input id="barcode" class="input" value="4607001122334"/><div style="height:12px"></div><button class="btn" onclick="findItem()">Найти товар</button></div>
+          <button class="btn danger" onclick="setBad()">Проверить ошибочный сценарий</button>
+          <div id="err" class="error hidden"><b>Товар не найден</b><br/>Штрихкод отсутствует в текущем документе приёмки.</div>
+        </section>
+
+        <section id="s3" class="hidden">
+          <div class="header"><div><div class="title">Позиция найдена</div><div class="sub">Сверка количества</div></div><button class="qbtn" onclick="go(2)">‹</button></div>
+          <div class="card"><div class="label">Товар</div><div class="big">Товар A-125</div><div class="sub">Артикул 84321 · 4607001122334</div></div>
+          <div class="card"><div class="row"><span class="kpi">Ожидается</span><span class="kpi"><b>12 шт.</b></span></div><div class="row" style="margin-top:8px"><span class="kpi">Принято</span><span class="kpi"><b>7 шт.</b></span></div><div class="row" style="margin-top:8px"><span class="kpi">Осталось</span><span class="kpi"><b id="remain">5 шт.</b></span></div></div>
+          <div class="card"><div class="label">Принять сейчас</div><div class="qty"><button class="qbtn" onclick="qty(-1)">−</button><div id="qty" class="qval">5</div><button class="qbtn" onclick="qty(1)">+</button></div><div style="height:14px"></div><button id="confirm" class="btn" onclick="go(4)">Подтвердить 5 шт.</button></div>
+        </section>
+
+        <section id="s4" class="hidden">
+          <div class="header"><div><div class="title">Готово</div><div class="sub">Результат сохранён</div></div></div>
+          <div class="success">✓</div><div style="text-align:center"><div class="big">Принято <span id="finalQty">5</span> шт.</div><div class="sub" style="margin:8px 0 28px">Результат сохранён и готов к передаче в учётную систему</div></div>
+          <button class="btn" onclick="resetAll()">Следующий товар</button><div style="height:10px"></div><button class="btn ghost" onclick="go(3)">Вернуться к позиции</button>
+        </section>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="pill">Кликабельный прототип</div>
+      <h1>Приёмка товара по штрихкоду</h1>
+      <p>Обезличенный mobile/TSD-прототип, собранный для демонстрации продуктового сценария и передачи идеи в разработку.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><b>Сканирование</b><span>Сотрудник сканирует штрихкод или вводит его вручную.</span></div></div>
+        <div class="step"><div class="n">2</div><div><b>Поиск в документе</b><span>Система проверяет, есть ли позиция в активном документе приёмки.</span></div></div>
+        <div class="step"><div class="n">3</div><div><b>Сверка количества</b><span>Показывается ожидаемое, принятое и оставшееся количество.</span></div></div>
+        <div class="step"><div class="n">4</div><div><b>Подтверждение</b><span>Количество валидируется, результат сохраняется.</span></div></div>
+        <div class="step"><div class="n">5</div><div><b>Следующая позиция</b><span>После успеха пользователь сразу возвращается к следующему сканированию.</span></div></div>
+      </div>
+      <p class="hint">Демонстрационный артефакт. Названия, идентификаторы и данные вымышлены.</p>
+    </aside>
+  </div>
+</div>
+<script>
+let currentQty=5;
+function go(n){
+  document.querySelectorAll('section[id^="s"]').forEach(x=>x.classList.add('hidden'));
+  document.getElementById('s'+n).classList.remove('hidden');
+  if(n===4) document.getElementById('finalQty').textContent=currentQty;
+}
+function setBad(){document.getElementById('barcode').value='0000000000000';document.getElementById('err').classList.add('hidden')}
+function findItem(){
+  const v=document.getElementById('barcode').value.trim();
+  if(v==='4607001122334'){document.getElementById('err').classList.add('hidden');currentQty=5;syncQty();go(3)}
+  else document.getElementById('err').classList.remove('hidden');
+}
+function qty(d){currentQty=Math.max(1,Math.min(5,currentQty+d));syncQty()}
+function syncQty(){document.getElementById('qty').textContent=currentQty;document.getElementById('confirm').textContent='Подтвердить '+currentQty+' шт.'}
+function resetAll(){document.getElementById('barcode').value='4607001122334';document.getElementById('err').classList.add('hidden');currentQty=5;syncQty();go(1)}
+</script>
+</body>
+</html>
